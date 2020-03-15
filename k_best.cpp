@@ -134,9 +134,10 @@ public:
 			char v2 = 'A' + arvore[i].obterVertice2();
 			cout << "(" << v1 << ", " << v2 << ") = " << arvore[i].obterPeso() << endl;
 		}*/
-		this->pesoMST = total;		
+		//this->pesoMST = total;		
         Grafo r(this->V);
         r.arestas = arvore;
+		r.pesoMST = total;
         return r;
 	}
 
