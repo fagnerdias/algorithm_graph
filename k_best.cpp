@@ -204,7 +204,7 @@ public:
 			ps.kruskal();
             output.push_back(ps);
             //list.pop_back();
-			printList();
+			//printList();
 			//cout << ps.pesoMST << " pos: " << ps.pos << " \n";
 			this->list.erase(this->list.begin()+ ps.getPos());
             particao(ps);
@@ -325,9 +325,6 @@ int main(int argc, char *argv[])
 	g.adicionarAresta(23,38, 7);
 	g.adicionarAresta(43,31, 10);
 	g.adicionarAresta(20,5, 40);
-	*/
-	
-	
 	
 	g.adicionarAresta(1,27, 43);
 	g.adicionarAresta(49,41, 20);
@@ -431,7 +428,69 @@ int main(int argc, char *argv[])
 	g.adicionarAresta(12,15, 22);
 
 	g.k_best();
-	
+	*/
 	//g.makeRandGrafo(40,60,50);
+
+	g.adicionarAresta(1,37, 1);
+	g.adicionarAresta(33,10, 48);
+	g.adicionarAresta(42,19, 0);
+	g.adicionarAresta(21,0, 8);
+	g.adicionarAresta(31,6, 37);
+	g.adicionarAresta(38,28, 12);
+	g.adicionarAresta(1,33, 18);
+	g.adicionarAresta(9,23, 45);
+	g.adicionarAresta(14,11, 32);
+	g.adicionarAresta(22,7, 7);
+	g.adicionarAresta(29,11, 44);
+	g.adicionarAresta(30,44, 7);
+	g.adicionarAresta(28,37, 26);
+	g.adicionarAresta(28,10, 28);
+	g.adicionarAresta(36,41, 34);
+	g.adicionarAresta(25,32, 15);
+	g.adicionarAresta(39,33, 48);
+	g.adicionarAresta(8,44, 23);
+	g.adicionarAresta(5,10, 35);
+	g.adicionarAresta(39,33, 44);
+	g.adicionarAresta(46,12, 5);
+	g.adicionarAresta(43,42, 0);
+	g.adicionarAresta(0,20, 39);
+	g.adicionarAresta(28,0, 49);
+	g.adicionarAresta(6,37, 42);
+	g.adicionarAresta(41,14, 24);
+	g.adicionarAresta(8,4, 9);
+	g.adicionarAresta(8,14, 4);
+	g.adicionarAresta(31,19, 16);
+	g.adicionarAresta(18,10, 49);
+	g.adicionarAresta(13,6, 13);
+	g.adicionarAresta(18,49, 5);
+	g.adicionarAresta(20,1, 27);
+	g.adicionarAresta(11,29, 28);
+	g.adicionarAresta(12,36, 17);
+	g.adicionarAresta(5,29, 33);
+	g.adicionarAresta(29,39, 37);
+	g.adicionarAresta(39,47, 3);
+	g.adicionarAresta(45,30, 24);
+	g.adicionarAresta(11,49, 34);
+	g.adicionarAresta(11,14, 43);
+	g.adicionarAresta(26,34, 42);
+	g.adicionarAresta(32,7, 46);
+	g.adicionarAresta(11,18, 25);
+	g.adicionarAresta(41,31, 13);
+	g.adicionarAresta(10,36, 44);
+	g.adicionarAresta(44,17, 35);
+	g.adicionarAresta(33,8, 32);
+	g.adicionarAresta(37,3, 15);
+	g.adicionarAresta(13,17, 14);
+	g.adicionarAresta(48,30, 30);
+	g.adicionarAresta(41,6, 14);
+	g.adicionarAresta(35,38, 23);
+	g.adicionarAresta(31,2, 42);
+	g.adicionarAresta(9,45, 25);
+	g.adicionarAresta(24,6, 13);
+	g.adicionarAresta(21,2, 30);
+	g.adicionarAresta(6,35, 41);
+	g.adicionarAresta(39,24, 44);
+	g.adicionarAresta(6,38, 11);
+	g.k_best();
 	return 0;
 }
