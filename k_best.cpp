@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm> // sort
 #include <string.h> // memset
+#include "conn.h"
 //#include "sort.h"
 using namespace std;
 
@@ -36,6 +37,7 @@ public:
 		return vertice2;
 	}
 
+
 	int obterPeso()
 	{
 		return peso;
@@ -59,7 +61,15 @@ class Grafo
 	vector<Aresta> arestas; // vetor de arestas
 	vector<Grafo> list;
 	int pesoMST;
+	int pos;
 public:
+
+	int getQntVertice(){
+		return V;
+	}
+
+	void setPos(int p ){ this->pos = p;}
+	int getPos(){return this->pos;}
 
 	bool operator < (const Grafo& g) const
 	{
@@ -95,8 +105,8 @@ public:
 		subset[v1_set] = v2_set;
 	}
 
-	/// função que roda o algoritmo de Kruskal
-	Grafo kruskal()
+	// função que roda o algoritmo de Kruskal
+	void kruskal()
 	{
 		vector<Aresta> arvore;
 		int total = 0;
@@ -135,23 +145,26 @@ public:
 			cout << "(" << v1 << ", " << v2 << ") = " << arvore[i].obterPeso() << endl;
 		}*/
 		//this->pesoMST = total;		
-        Grafo r(this->V);
-        r.arestas = arvore;
-		r.pesoMST = total;
-        return r;
+        
+        
+		this->pesoMST = total;
+        
 	}
 
     void particao(Grafo P){        
-        Grafo P1 = P;
-        Grafo P2 = P;
+        Grafo P1(P.V);
+		P1.arestas = P.arestas;
+        Grafo P2(P.V);
+		P2.arestas = P.arestas;
         for(int i = 0; i < P.arestas.size(); i++){
             if (P.arestas[i].getInclido() != 1 && P.arestas[i].getInclido() != 0)
             {
                 P1.arestas[i].setIncluido(0);
                 P2.arestas[i].setIncluido(1);
-                P1 = P1.kruskal();
-                if(P1.arestas.size() == V-1){
-					
+                P1.kruskal();
+                //if(P1.arestas.size() == V-1){
+				if(Is_Connected(P1.arestas[i].obterVertice1())){
+					P1.setPos(P.getPos()+1);
                     this->list.push_back(P1);
                 }
                 P1 = P2;
@@ -181,40 +194,73 @@ public:
 		}
 	}
 
-    void k_best(Grafo a){        
-        vector<Grafo> output;        
-        this->list.push_back(a);
-		//MergeSort(list, 0, list.size())
-        output.push_back(a.kruskal());
+    void k_best(){        
+        vector<Grafo> output;
+		this->setPos(0);
+		this->kruskal();
+        list.push_back(*this);	        
         while( this->list.empty() != true){
             Grafo ps = getMinMST(this->list);	
-            output.push_back(ps.kruskal());
+			ps.kruskal();
+            output.push_back(ps);
             //list.pop_back();
-			this->list.erase(this->list.begin()+ getPos(this->list, ps));
+			printList();
+			//cout << ps.pesoMST << " pos: " << ps.pos << " \n";
+			this->list.erase(this->list.begin()+ ps.getPos());
             particao(ps);
         }        
         for (int i = 0 ;  i < output.size() ; i++)
         {
-            cout << "Grafo[" << i << "] -" << output[i].pesoMST << "\n";
-            output[i].display();
+            cout << "Grafo[" << i << "] - peso:" << output[i].pesoMST << "\n";
+            //output[i].display();
         }
         
     }
 
+	void printList(){
+		cout << "[ ";
+		for(int i = 0; i < list.size(); i++){
+			cout << list[i].pesoMST << ", ";
+		}
+		cout << " ]\n";
+	}
+
     void display(){
         for(Aresta i : this->arestas){
-            cout << "(" << i.obterVertice1() << "," << i.obterVertice2() << ") w = " << i.obterPeso() << "\n";
+        
+		    cout << "(" << i.obterVertice1() << "," << i.obterVertice2() << ") w = " << i.obterPeso() << "\n";
         }
     }
+
+	Grafo makeRandGrafo(int V,int a, int max){
+		Grafo r(V);
+		for(int i =0 ; i < a; i++){
+			int v1,v2,p = 0;
+			v1 = rand() % max;
+			v2 = rand() % max;
+			p = rand() % max;
+			r.adicionarAresta(v1,v2,p);
+		}
+		if (Is_Connected(r.arestas[0].obterVertice1()))
+		{
+			r.display();
+			return r;	
+		}
+		else{
+			makeRandGrafo(V,a,max);
+		}
+		
+	}
 
 
 };
 
 int main(int argc, char *argv[])
 {
-	Grafo g(7); // grafo
+	Grafo g(50); // grafo
 	
 	// adiciona as arestas
+	/*
 	g.adicionarAresta(0, 1, 7);
 	g.adicionarAresta(0, 3, 5);
 	g.adicionarAresta(1, 2, 8);
@@ -226,9 +272,166 @@ int main(int argc, char *argv[])
 	g.adicionarAresta(4, 5, 8);
 	g.adicionarAresta(4, 6, 9);
 	g.adicionarAresta(5, 6, 11);
-	
 	//g.kruskal(); // roda o algoritmo de Kruskal
-    g.k_best(g);
+    g.k_best();
 	
+	g.adicionarAresta(0,6, 38);
+	g.adicionarAresta(17,14, 39);
+	g.adicionarAresta(32,4, 4);
+	g.adicionarAresta(25,29, 41);
+	g.adicionarAresta(12,38, 19);
+	g.adicionarAresta(36,20, 6);
+	g.adicionarAresta(44,10, 49);
+	g.adicionarAresta(14,15, 14);
+	g.adicionarAresta(26,36, 33);
+	g.adicionarAresta(39,19, 35);
+	g.adicionarAresta(2,21, 43);
+	g.adicionarAresta(40,39, 9);
+	g.adicionarAresta(31,23, 14);
+	g.adicionarAresta(35,48, 45);
+	g.adicionarAresta(27,13, 33);
+	g.adicionarAresta(48,49, 5);
+	g.adicionarAresta(5,43, 18);
+	g.adicionarAresta(6,10, 33);
+	g.adicionarAresta(23,36, 21);
+	g.adicionarAresta(8,27, 40);
+	g.adicionarAresta(45,31, 11);
+	g.adicionarAresta(40,23, 0);
+	g.adicionarAresta(0,4, 25);
+	g.adicionarAresta(14,42, 24);
+	g.adicionarAresta(9,19, 39);
+	g.adicionarAresta(44,19, 38);
+	g.adicionarAresta(1,26, 33);
+	g.adicionarAresta(19,33, 43);
+	g.adicionarAresta(4,6, 31);
+	g.adicionarAresta(25,16, 11);
+	g.adicionarAresta(17,12, 42);
+	g.adicionarAresta(29,2, 18);
+	g.adicionarAresta(31,2, 24);
+	g.adicionarAresta(7,18, 16);
+	g.adicionarAresta(33,27, 37);
+	g.adicionarAresta(22,23, 7);
+	g.adicionarAresta(12,25, 33);
+	g.adicionarAresta(47,46, 18);
+	g.adicionarAresta(41,3, 26);
+	g.adicionarAresta(24,30, 43);
+	g.adicionarAresta(35,48, 5);
+	g.adicionarAresta(30,29, 9);
+	g.adicionarAresta(48,10, 12);
+	g.adicionarAresta(24,19, 30);
+	g.adicionarAresta(41,2, 10);
+	g.adicionarAresta(30,26, 33);
+	g.adicionarAresta(39,40, 8);
+	g.adicionarAresta(23,38, 7);
+	g.adicionarAresta(43,31, 10);
+	g.adicionarAresta(20,5, 40);
+	*/
+	
+	
+	
+	g.adicionarAresta(1,27, 43);
+	g.adicionarAresta(49,41, 20);
+	g.adicionarAresta(37,38, 46);
+	g.adicionarAresta(7,44, 6);
+	g.adicionarAresta(21,26, 13);
+	g.adicionarAresta(12,15, 41);
+	g.adicionarAresta(44,26, 30);
+	g.adicionarAresta(22,32, 42);
+	g.adicionarAresta(13,41, 8);
+	g.adicionarAresta(24,15, 37);
+	g.adicionarAresta(6,16, 15);
+	g.adicionarAresta(1,17, 8);
+	g.adicionarAresta(21,5, 48);
+	g.adicionarAresta(19,12, 43);
+	g.adicionarAresta(25,33, 21);
+	g.adicionarAresta(40,47, 38);
+	g.adicionarAresta(33,42, 14);
+	g.adicionarAresta(13,16, 49);
+	g.adicionarAresta(7,29, 40);
+	g.adicionarAresta(16,3, 5);
+	g.adicionarAresta(3,9, 21);
+	g.adicionarAresta(20,10, 38);
+	g.adicionarAresta(30,34, 45);
+	g.adicionarAresta(29,3, 8);
+	g.adicionarAresta(22,31, 43);
+	g.adicionarAresta(45,23, 43);
+	g.adicionarAresta(33,7, 35);
+	g.adicionarAresta(49,22, 3);
+	g.adicionarAresta(48,30, 32);
+	g.adicionarAresta(40,48, 37);
+	g.adicionarAresta(45,3, 47);
+	g.adicionarAresta(18,26, 9);
+	g.adicionarAresta(9,6, 45);
+	g.adicionarAresta(4,35, 49);
+	g.adicionarAresta(14,9, 32);
+	g.adicionarAresta(10,4, 5);
+	g.adicionarAresta(3,39, 14);
+	g.adicionarAresta(40,41, 37);
+	g.adicionarAresta(43,41, 19);
+	g.adicionarAresta(27,32, 19);
+	g.adicionarAresta(14,29, 22);
+	g.adicionarAresta(11,48, 48);
+	g.adicionarAresta(23,9, 7);
+	g.adicionarAresta(18,13, 42);
+	g.adicionarAresta(19,30, 4);
+	g.adicionarAresta(1,40, 10);
+	g.adicionarAresta(9,45, 0);
+	g.adicionarAresta(25,35, 43);
+	g.adicionarAresta(12,30, 34);
+	g.adicionarAresta(33,7, 16);
+	g.adicionarAresta(2,21, 48);
+	g.adicionarAresta(27,35, 48);
+	g.adicionarAresta(27,10, 7);
+	g.adicionarAresta(34,28, 22);
+	g.adicionarAresta(29,0, 2);
+	g.adicionarAresta(33,3, 44);
+	g.adicionarAresta(43,12, 39);
+	g.adicionarAresta(45,38, 24);
+	g.adicionarAresta(38,2, 4);
+	g.adicionarAresta(23,38, 13);
+	g.adicionarAresta(41,42, 35);
+	g.adicionarAresta(39,21, 22);
+	g.adicionarAresta(37,49, 32);
+	g.adicionarAresta(44,35, 12);
+	g.adicionarAresta(19,16, 12);
+	g.adicionarAresta(21,49, 16);
+	g.adicionarAresta(16,45, 30);
+	g.adicionarAresta(7,42, 20);
+	g.adicionarAresta(32,31, 25);
+	g.adicionarAresta(38,6, 15);
+	g.adicionarAresta(4,49, 7);
+	g.adicionarAresta(39,39, 31);
+	g.adicionarAresta(11,28, 32);
+	g.adicionarAresta(45,25, 17);
+	g.adicionarAresta(7,44, 34);
+	g.adicionarAresta(22,17, 35);
+	g.adicionarAresta(40,35, 32);
+	g.adicionarAresta(22,43, 27);
+	g.adicionarAresta(43,27, 8);
+	g.adicionarAresta(20,17, 16);
+	g.adicionarAresta(35,21, 15);
+	g.adicionarAresta(44,12, 6);
+	g.adicionarAresta(25,25, 37);
+	g.adicionarAresta(7,20, 12);
+	g.adicionarAresta(27,30, 8);
+	g.adicionarAresta(13,2, 25);
+	g.adicionarAresta(0,42, 13);
+	g.adicionarAresta(35,14, 8);
+	g.adicionarAresta(12,9, 35);
+	g.adicionarAresta(22,29, 4);
+	g.adicionarAresta(40,16, 26);
+	g.adicionarAresta(7,13, 38);
+	g.adicionarAresta(14,40, 16);
+	g.adicionarAresta(3,0, 36);
+	g.adicionarAresta(17,27, 16);
+	g.adicionarAresta(25,42, 20);
+	g.adicionarAresta(2,44, 14);
+	g.adicionarAresta(17,29, 29);
+	g.adicionarAresta(25,43, 40);
+	g.adicionarAresta(12,15, 22);
+
+	g.k_best();
+	
+	//g.makeRandGrafo(40,60,50);
 	return 0;
 }
