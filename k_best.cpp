@@ -9,6 +9,7 @@
 #include <algorithm> // sort
 #include <string.h> // memset
 #include "conn.h"
+#include <time.h>
 //#include "sort.h"
 using namespace std;
 
@@ -491,6 +492,15 @@ int main(int argc, char *argv[])
 	g.adicionarAresta(6,35, 41);
 	g.adicionarAresta(39,24, 44);
 	g.adicionarAresta(6,38, 11);
+
+	clock_t Ticks[2];
+    Ticks[0] = clock();
+
 	g.k_best();
+
+	Ticks[1] = clock();
+	double Tempo = (Ticks[1] - Ticks[0]) * 1000.0 / CLOCKS_PER_SEC;
+	cout << "Tempo de execução:" << Tempo ;
+	getchar();
 	return 0;
 }

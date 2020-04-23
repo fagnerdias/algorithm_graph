@@ -104,7 +104,7 @@ public:
 			makeRandGrafo(V,a,max);
 		}
 		
-	}
+	}	
 
     bool contains(vector<Aresta> arestas, Aresta a){
         for(Aresta e: arestas){
@@ -137,31 +137,41 @@ public:
 };
 
 int main(int argc, char *argv[]){
+	int V = 15;
 
-    Grafo g(10);
+    Grafo g(V);
 
-    g.adicionarAresta(1, 2,0);
-    g.adicionarAresta(1, 3,0);
-    g.adicionarAresta(1 ,4 ,0);
-    g.adicionarAresta(2, 3,0);
-    g.adicionarAresta(2, 4,0);
-    g.adicionarAresta(3, 5,0);
-    g.adicionarAresta(4, 6,0);
-    g.adicionarAresta(5, 6,0);
-    g.adicionarAresta(5, 7,0);
-    g.adicionarAresta(6, 7,0);
-    g.adicionarAresta(7, 8,0);
-    g.adicionarAresta(8, 9,0);
-    g.adicionarAresta(8 ,10,0);
-    g.adicionarAresta(9 ,10,0);
+    g.adicionarAresta(0,9,0);
+g.adicionarAresta(7,7,0);
+g.adicionarAresta(1,5,0);
+g.adicionarAresta(7,7,0);
+g.adicionarAresta(7,3,0);
+g.adicionarAresta(5,6,0);
+g.adicionarAresta(9,4,0);
+g.adicionarAresta(1,2,0);
+g.adicionarAresta(3,9,0);
+g.adicionarAresta(8,8,0);
+g.adicionarAresta(0,9,0);
+g.adicionarAresta(3,8,0);
+g.adicionarAresta(6,1,0);
+g.adicionarAresta(5,9,0);
+g.adicionarAresta(4,8,0);
+g.adicionarAresta(0,3,0);
+g.adicionarAresta(4,4,0);
+g.adicionarAresta(4,7,0);
+g.adicionarAresta(3,1,0);
+g.adicionarAresta(5,9,0);
+	
     
-    if(g.check_all_permutations(g,10))
-        cout << "vdd";
-    else
-    {
-        cout << "false";
-    }
-    
+	clock_t Ticks1[2];
+    Ticks1[0] = clock();
+	
+	cout << g.check_all_permutations(g,V) << "\n";
+
+	Ticks1[1] = clock();
+	double Tempo1 = (Ticks1[1] - Ticks1[0]) * 1000.0 / CLOCKS_PER_SEC;
+	cout << "Tempo de execução:" << Tempo1 ;
+	getchar();
 
 
     return 0;
