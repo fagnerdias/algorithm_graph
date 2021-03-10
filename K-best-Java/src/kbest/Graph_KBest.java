@@ -75,27 +75,23 @@ public class Graph_KBest {
     	System.out.println("peso da AGM: " + minimal.getSpanningTree().getWeight());
     	c.put((int)minimal.getSpanningTree().getWeight(), particao);
     	s.put((int)minimal.getSpanningTree().getWeight(), minimal.getSpanningTree());
-    	int id =0;
-    	while(!list.isEmpty() && total > 0) {    		
-    		LinkedList<EdgeParticao> part = new LinkedList<EdgeParticao>();
-    		
+    	
+    	while(!list.isEmpty() ) {    		
+    		LinkedList<EdgeParticao> part = new LinkedList<EdgeParticao>();    		
     		List<Integer> custo = new ArrayList<Integer>( c.keySet());
+    		if (custo.isEmpty()) {
+				break;
+			}
     		Collections.sort(custo);
-    		part = c.get(custo.get(id));    		    		
-    		saida.add(s.get(custo.get(id)));
+    		part = c.get(custo.get(0));    		    		
+    		saida.add(s.get(custo.get(0)));
     		list.remove(part);
-    		id++;
-    		total--;
-    		makeParticao(part,s.get(custo.get(id-1)).getEdges());
+    		c.remove(custo.get(0));
+    		s.remove(custo.get(0));    		
+    		makeParticao(part);
     	}
     	List<Integer> custo = new ArrayList<Integer>( c.keySet());
 		Collections.sort(custo);
-//    	for (int peso : custo) {
-//    		System.out.println("Peso - " + peso);
-//    		PrimMinimumSpanningTree<String, EdgeParticao> min = new PrimMinimumSpanningTree<>(MSTGraph(c.get(peso)));
-//    		System.out.println("AGM - " + min.getSpanningTree().toString());
-//			
-//		}
     	for (SpanningTree<EdgeParticao> agm : saida) {
     		System.out.println("Peso - " + agm.getWeight());
     		System.out.println("AGM - " + agm.toString());
@@ -104,60 +100,36 @@ public class Graph_KBest {
     	
     }
     
-    public static void makeParticao(LinkedList<EdgeParticao> p, Set<EdgeParticao> agm){
+    public static void makeParticao(LinkedList<EdgeParticao> p){
     	LinkedList<EdgeParticao> p1 = new LinkedList<EdgeParticao>();    	
     	LinkedList<EdgeParticao> p2 = new LinkedList<EdgeParticao>();
-    	Iterator<EdgeParticao> it = agm.iterator();
+    	Iterator<EdgeParticao> it = p.iterator();
     	  while (it.hasNext()) {
     		  EdgeParticao s = it.next();    		  
     		  p1.add((EdgeParticao) s.clone());
     		  p2.add((EdgeParticao) s.clone());
     	  }
-    	EdgeParticao[] part = new EdgeParticao[agm.size()];  
-    	agm.toArray(part);
-    	for (int i=0; i < part.length; i++) {    		
-			if (part[i].isObrigatorio() == false && part[i].isProibida() == false) {
-				p1.get(i).setObrigatorio(true);
-				p1.get(i).setProibida(false);
+
+    	for (int i=0; i < p.size(); i++) {    		
+			if (p.get(i).isObrigatorio() == false && p.get(i).isProibida() == false) {
+				p1.get(i).setProibida(true);											
+				p2.get(i).setObrigatorio(true);
 				
-				p2.get(i).setObrigatorio(false);
-				p2.get(i).setProibida(true);
-				String[] total = p.toString().replace("[", "").replace("]", "").split(", ");
-				String[] mst = agm.toString().replace("[", "").replace("]", "").split(", ");
-				boolean add = false;
-				for (int j = 0; j < total.length; j++) {
-					for (int j2 = 0; j2 < mst.length; j2++) {
-						add = true;
-						if(total[j].equals(mst[j2])) {
-							add = false;
-							break;
-						}
-					}
-					if (add) {
-						p1.add(p.get(j));
-						p2.add(p.get(j));
-					}
-				}										        
-		        
 		        PrimMinimumSpanningTree<String, EdgeParticao> min = new PrimMinimumSpanningTree<>(MSTGraph(p1));
 		        min.getSpanningTree().getWeight();
-		        ConnectivityInspector<String, EdgeParticao> conn = new ConnectivityInspector<>(MSTGraph(p1));
-		        
+		        LinkedList<EdgeParticao> t = new LinkedList<EdgeParticao>();
+		        for (EdgeParticao edgeParticao : min.getSpanningTree().getEdges()) {
+					t.add(edgeParticao);
+				}
+
+		        ConnectivityInspector<String, EdgeParticao> conn = new ConnectivityInspector<>(MSTGraph(t));		        
 		        if (conn.isConnected()) {
 					list.add(p1);
 					s.put((int) min.getSpanningTree().getWeight(), min.getSpanningTree());
-			        c.put((int) min.getSpanningTree().getWeight(), p1);
-					
-				}
-		        		        
-		        LinkedList<EdgeParticao> aux = new LinkedList<>();
-		        Iterator<EdgeParticao> it2 = p2.iterator();
-		    	  while (it2.hasNext()) {
-		    		  EdgeParticao s = it2.next();		    		  
-		    		  aux.add((EdgeParticao) s.clone());
-		    	  }
-
-		        p1 = aux;
+			        c.put((int) min.getSpanningTree().getWeight(), p1);					
+				}		        		        
+		        p1.get(i).setProibida(false);
+		        p1.get(i).setObrigatorio(true);
 			}
 		}
     	    	
@@ -167,8 +139,10 @@ public class Graph_KBest {
     	Graph<String, EdgeParticao> g = 
     			new SimpleWeightedGraph<String, EdgeParticao>(EdgeParticao.class);
         for (EdgeParticao edgeParticao : p1) {
-        	if (!edgeParticao.isProibida()) {
-        		String[] source = edgeParticao.toString().replace("(", "").replace(")", "").trim().split(":");
+        	String[] source = edgeParticao.toString().replace("(", "").replace(")", "").trim().split(":");
+        	g.addVertex(source[0].trim());
+        	g.addVertex(source[1].trim());
+        	if (!edgeParticao.isProibida()) {        		
 	        	g.addVertex(source[0].trim());
 	        	g.addVertex(source[1].trim());
 	        	g.addEdge(source[0].trim(), source[1].trim());
